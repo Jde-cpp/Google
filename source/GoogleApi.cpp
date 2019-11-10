@@ -44,16 +44,11 @@ namespace Jde
 					var j = nlohmann::json::parse( text );
 					unique_lock l{_tokenMutex};
 					var time = j["time"].get<string>();
-					//DBG( "now={}", DateTime().ToIsoString() );
-					//DBG( "Base Time={}", DateTime( time ).ToIsoString() );
 					var key = j["key"].get<string>();
 					var tokenJson = j.at( "token" );
 					auto token2{ tokenJson.get<AccessToken>() };
-					//DBG( "Token Time={}", DateTime(token2.Expiration).ToIsoString() );
 					var delta = Clock::now()-DateTime( time ).GetTimePoint();
-					//DBG( "Delta={}", duration_cast<std::chrono::minutes>(delta).count() );
 					token2.Expiration-=delta;
-					//= DateTime(result.Expiration).ToIsoString();
 					DBG( "Adding saved token expires in {} minutes", duration_cast<std::chrono::minutes>(token2.Expiration-Clock::now()).count() );
 					_tokens.emplace( key, token2 );
 				}
