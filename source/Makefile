@@ -13,7 +13,7 @@ ifeq ($(DEBUG), 1)
 	OUT_DIR=$(OUT_DIR_BASE)debug
 	CXXFLAGS= $(CXXFLAGS_BASE) -O0 -fsanitize=address -fno-omit-frame-pointer
 	BIN_DIR=$(BIN_DIR_BASE)debug
-	LIB=$(LIB_BASE)
+	LIB = -llsan $(LIB_BASE)
 else
 	OUT_DIR=$(OUT_DIR_BASE)release
 	CXXFLAGS= $(CXXFLAGS_BASE) -march=native -DNDEBUG -O3
@@ -39,7 +39,7 @@ $(OUTPUT): $(OUT_DIR)/stdafx.h.gch $(OBJECTS)
 	g++-8 -L$(BIN_DIR) $(LDFLAGS) $(OBJECTS) -o$(OUTPUT) $(LIB)
 
 $(OUT_DIR)/stdafx.h.gch: pc.h
-	$(CXX) $(CXXFLAGS) ./pc.h -o $(OUT_DIR)/stdafx.h.gch -I/home/duffyj/code/libraries/json/include -I/home/duffyj/code/libraries/spdlog/include -I/home/duffyj/code/libraries/boostorg/boost_1_68_0 ../../Framework/source
+	$(CXX) $(CXXFLAGS) ./pc.h -o $(OUT_DIR)/stdafx.h.gch -I/home/duffyj/code/libraries/json/include -I/home/duffyj/code/libraries/spdlog/include -I$BOOST_ROOT ../../Framework/source
 	#
 ######################################################################################
 $(OUT_DIR)/%.o: %.cpp %.h pc.h
