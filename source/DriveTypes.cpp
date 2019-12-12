@@ -1,19 +1,46 @@
-#include "stdafx.h"
 #include "DriveTypes.h"
 #include "../../Framework/source/io/DiskWatcher.h"
 
 namespace Jde::IO::Drive::Google
 {
-	File::File( const File& file, const fs::path& path):
-		File(file)
+	File::File()noexcept
+	{}
+
+	File::File( const File& file, const fs::path& path)noexcept:
+		File{ file }
 	{
 		Path = path;
 	}
-	File::File( const IDirEntry& entry, string_view parentId ):
+	
+/*	File::File( const File& file )//:
+		// Id{ file.Id },
+		// CreatedTime{file.CreatedTime},
+		// Kind{file.Kind},
+		// MimeType{file.MimeType},
+		// ModifiedTime{file.ModifiedTime},
+		// Name{file.Name},
+		// Parents{file.Parents},
+		// Path{file.Path},
+		// Size{file.Size}
+	{
+		DBG0( "File::File" );
+		Id = file.Id;
+		CreatedTime=file.CreatedTime;
+		Kind=file.Kind;
+		MimeType=file.MimeType;
+		ModifiedTime=file.ModifiedTime;
+		Name=file.Name;
+		Parents=file.Parents;
+		Path=file.Path;
+		Size=file.Size;
+	}
+	*/
+	File::File( const IDirEntry& entry, string_view parentId )noexcept:
 		Id{""},
 		CreatedTime{ entry.CreatedTime },
 		ModifiedTime{ entry.CreatedTime },
-		Name{ entry.Path.stem().string() },
-		Parents{ string{parentId} }
-	{}
+		Name{ entry.Path.stem().string() }
+	{
+		Parents.push_back( string{parentId} );
+	}
 }

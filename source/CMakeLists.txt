@@ -1,8 +1,33 @@
-cmake_minimum_required (VERSION 3.10)
-set( CMAKE_MODULE_PATH "../../../../modules" )
-include(cotire)
-project (Jde.IO.Drive.Google)
-
-#add_custom_target(pch COMMAND ./pc.h -o ${CMAKE_CURRENT_BINARY_DIR}/stdafx.h.gch )
-add_executable(Jde.IO.Drive.Google GoogleDrive.cpp GoogleApi.cpp)
-add_dependencies(Jde.IO.Drive.Google pch)
+#export CXX=g++-8
+cmake_minimum_required(VERSION 3.16)
+project(Jde.Google)
+set( CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../Framework/cmake )
+include(SetUpConfigurations)
+#######################################################
+link_directories( ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} )
+add_library( Jde.Google SHARED GoogleApi.cpp GoogleDrive.cpp DriveTypes.cpp )
+#######################################################
+target_link_libraries(Jde.Google Threads::Threads)
+target_link_libraries(Jde.Google Jde.Ssl)
+target_link_libraries(Jde.Google ssl)
+target_link_libraries(Jde.Google stdc++fs)
+#######################################################
+target_precompile_headers(Jde.Google
+  PRIVATE
+	<nlohmann/json.hpp>
+	<boost/crc.hpp> 
+	<boost/noncopyable.hpp>
+	<boost/system/error_code.hpp>
+	<spdlog/spdlog.h>
+	<spdlog/sinks/basic_file_sink.h>
+	<spdlog/fmt/ostr.h>
+	"../../Framework/source/DateTime.h"
+	"../../Framework/source/Exception.h"
+	"../../Framework/source/JdeAssert.h"
+	"../../Framework/source/TypeDefs.h"
+	"../../Framework/source/log/Logging.h"
+	"../../Framework/source/Settings.h"
+	"../../Framework/source/collections/UnorderedMap.h"
+	"../../Framework/source/io/File.h"
+	"../../Ssl/source/Ssl.h"
+)

@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef JDE_GOOGLE_EXPORTS
+#ifdef Jde_Google_EXPORTS
 	#ifdef _MSC_VER
 		#define JDE_GOOGLE_EXPORT __declspec( dllexport )
 	#else

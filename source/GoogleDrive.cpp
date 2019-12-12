@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "GoogleDrive.h"
 #include "DriveTypes.h"
 #include "GoogleApi.h"
@@ -15,19 +14,19 @@ namespace Jde::IO::Drive
 	using Jde::Google::AccessToken;
 	using Jde::IO::Drive::Google::FileList;
 	using Jde::IO::Drive::Google::FilePtr;
-	struct DirEntry : IDirEntry
+	struct GoogleDirEntry : IDirEntry
 	{
-		DirEntry( const Google::File& file ):
+		GoogleDirEntry( const Google::File& file ):
 			IDirEntry{ file.IsDirectory() ? EFileFlags::Directory : EFileFlags::None, file.Path, file.Size, file.CreatedTime, file.ModifiedTime },
-			File{ file }
+			File2{ file }
 		{}
 		//bool IsDirectory()const noexcept override{ return File.IsDirectory(); }
-		Google::File File;
+		Google::File File2;
 	};
-	typedef sp<const DirEntry> DirEntryPtr;
+	typedef sp<const GoogleDirEntry> GoogleDirEntryPtr;
 
-	UnorderedMap<string,vector<FilePtr>> _fileNames;
-	UnorderedMap<string,const Google::File> _fileIds;
+	Collections::UnorderedMap<string,vector<FilePtr>> _fileNames;
+	Collections::UnorderedMap<string,const Google::File> _fileIds;
 	VectorPtr<Google::FilePtr> LoadFiles( string_view q )noexcept(false)
 	{
 		//var token = Google::RefreshTokenFromSettings();
@@ -124,7 +123,7 @@ namespace Jde::IO::Drive
 		}
 		return pFiles;
 	}
-
+//1EnVsIXP_QgIsI576Qy1NvphQAqyGw2Fz
 	vector<Google::FilePtr> FindPath( const fs::path& path, bool directory=false )noexcept(false)
 	{
 		vector<Google::FilePtr> found;
@@ -198,7 +197,7 @@ namespace Jde::IO::Drive
 					parentIds.emplace( pFile->Id, path );
 				
 				var relativeDir = pFile->Path.string().substr( dirString.size()+1 );
-				entries.emplace( relativeDir, make_shared<const DirEntry>(*pFile) );
+				entries.emplace( relativeDir, make_shared<const GoogleDirEntry>(*pFile) );
 			}
 			
 			if( parentIds.size()>0 )
@@ -219,7 +218,7 @@ namespace Jde::IO::Drive
 		if( !fs::exists(path) )
 			THROW( EnvironmentException("Could not find '{}'", path) );
 		std::ifstream is{ path };
-		json j;
+		nlohmann::json j;
 		is >> j;
 		for( var& el : j.items() )
 			_mimeTypes.emplace( el.key(), el.value() );
@@ -232,13 +231,13 @@ namespace Jde::IO::Drive
 			THROW( IOException("destination {} found {} times.", path.string(), parents.size()) );
 		Google::File file{ entry, parents[0]->Id };
 		file.CreatedTime = TimePoint();
-		json j = file;
+		nlohmann::json j = file;
 		string body = j.dump();
 		auto dir = Ssl::Send<Google::File>( "www.googleapis.com", "/drive/v3/files", body, "application/json", Jde::Google::AuthorizationString() );
 		dir.Path = path;
 		var pFile = make_shared<Google::File>( dir );
 		_fileIds.emplace( dir.Id, pFile );
-		return make_shared<DirEntry>( *pFile );
+		return make_shared<GoogleDirEntry>( *pFile );
 	}
 		
 	void Upload( const fs::path& source, const fs::path& destination )
@@ -277,13 +276,17 @@ namespace Jde::IO::Drive
 			file << os.str();
 		}
 		var result = Ssl::Send<Google::File>( "www.googleapis.com", "/upload/drive/v3/files?uploadType=multipart", os.str(), contentType, Jde::Google::AuthorizationString() );
-//		ostringstream osDebug;
-//		osDebug << nlohmann::json{result};
+//		ostringstream osDebug;"dbs/market/securities/arca/IAI/2019-12-10.dat.xz"
+//		osDebug << nlohmann::json{result}; "/mnt/2TB/securities/arca/IAI/2019-12-10.dat.xz"
 //		DBG0( osDebug.str() );
-//		FindId( result.Id );
+//		FindId( result.Id ); 
 	}
 	IDirEntryPtr  GoogleDrive::Save( const fs::path& destination, const vector<char>& bytes, const IDirEntry& dirEntry, uint retry )noexcept(false) //environmental
 	{
+		Google::File fooFile;
+		Google::File fooFile2{ fooFile };
+		var foo =  make_shared<GoogleDirEntry>( fooFile );//dbs/market/securities/arca/GLD/2019-12-10.dat.xz
+
 		constexpr string_view separator="b303c718d23a4d2c94405b8efd2a7fda";
 		var contentType = fmt::format( "multipart/related; boundary={}", separator );
 		if( _mimeTypes.size()==0 )
@@ -312,7 +315,7 @@ namespace Jde::IO::Drive
 		try
 		{
 			var result = Ssl::Send<Google::File>( "www.googleapis.com", "/upload/drive/v3/files?uploadType=multipart", os.str(), contentType, Jde::Google::AuthorizationString() );
-			return make_shared<DirEntry>( result );
+			return make_shared<GoogleDirEntry>( result );
 		}
 		catch( const IOException& e )
 		{
@@ -327,17 +330,17 @@ namespace Jde::IO::Drive
 	//VectorPtr<char> GoogleDrive::Load( const fs::path& path )noexcept(false)
 	VectorPtr<char> GoogleDrive::Load( const IDirEntry& dirEntry )noexcept(false)
 	{
-		auto pEntry = dynamic_cast<const DirEntry*>( &dirEntry );
-		sp<DirEntry> pFound;
+		auto pEntry = dynamic_cast<const GoogleDirEntry*>( &dirEntry );
+		sp<GoogleDirEntry> pFound;
 		if( !pEntry )
 		{
 			var files = FindPath( dirEntry.Path );
 			if( files.size()!=1 )
 				THROW( IOException("found '{}' entries for '{}'.", files.size(), dirEntry.Path.string()) );
-			pFound = make_shared<DirEntry>( *files[0] );
+			pFound = make_shared<GoogleDirEntry>( *files[0] );
 			pEntry = pFound.get();
 		}
-		var target{ fmt::format( "/drive/v3/files/{}?alt=media", pEntry->File.Id ) };
+		var target{ fmt::format( "/drive/v3/files/{}?alt=media", pEntry->File2.Id ) };
 
 		var value = Ssl::Get<string>( "www.googleapis.com", target, Jde::Google::AuthorizationString() );
 		return make_shared<vector<char>>( value.begin(), value.end() );

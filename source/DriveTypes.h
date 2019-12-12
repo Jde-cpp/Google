@@ -7,9 +7,10 @@ namespace Jde::IO::Drive::Google
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	struct File
 	{
-		File()=default;
-		File( const File& file, const fs::path& path);
-		File( const IDirEntry& entry, string_view parentId );
+		File()noexcept;
+		//File( const File& file );
+		File( const File& file, const fs::path& path)noexcept;
+		File( const IDirEntry& entry, string_view parentId )noexcept;
 		bool IsDirectory()const noexcept{ return MimeType=="application/vnd.google-apps.folder"; }
 
 		string Id{"root"};

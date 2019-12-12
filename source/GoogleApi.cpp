@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "GoogleApi.h"
 #define var const auto
 

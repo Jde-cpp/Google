@@ -1,17 +1,17 @@
-{//https://go.microsoft.com/fwlink/?LinkId=733558
+{
 	"version": "2.0.0",
 	"tasks": 
 	[{
 		"label": "build",
 		"type": "shell",
-		"command": "tput reset; ./build.sh",
+		"command": "tput reset; ../../Framework/cmake/buildc.sh ${workspaceFolder} debug",
 		"problemMatcher": { "base": "$gcc", "fileLocation": ["absolute"] },
 		"group": { "kind": "build", "isDefault": true }
 	},
 	{
 		"label": "clean",
 		"type": "shell",
-		"command": "clear;make clean; make clean DEBUG=0",
+		"command": "clear;cd .obj/debug;make clean; cd ../RelWithDebInfo; make clean",
 		"problemMatcher": {"owner": "cpp", "fileLocation": ["relative", "${workspaceFolder}"],
 			"pattern": {
 				"regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
@@ -22,7 +22,7 @@
 	{
 		"label": "rebuild",
 		"type": "shell",
-		"command": "tput reset;./build.sh 1 1",
+		"command": "tput reset;../../Framework/cmake/buildc.sh ${workspaceFolder} debug 1",
 		"problemMatcher": {"owner": "cpp", "fileLocation": ["relative", "${workspaceFolder}"],
 			"pattern": {
 				"regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
@@ -33,7 +33,18 @@
 	{
 		"label": "rebuildRelease",
 		"type": "shell",
-		"command": "clear;./build.sh 0 1",
+		"command": "clear;../../Framework/cmake/buildc.sh ${workspaceFolder} RelWithDebInfo 1",
+		"problemMatcher": {"owner": "cpp", "fileLocation": ["relative", "${workspaceFolder}"],
+			"pattern": {
+				"regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
+				"file": 1, "line": 2, "column": 3, "severity": 4, "message": 5
+			}
+		}
+	},
+	{
+		"label": "release",
+		"type": "shell",
+		"command": "clear;../../Framework/cmake/buildc.sh ${workspaceFolder} RelWithDebInfo 0",
 		"problemMatcher": {"owner": "cpp", "fileLocation": ["relative", "${workspaceFolder}"],
 			"pattern": {
 				"regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
@@ -44,7 +55,7 @@
 	{
 		"label": "make",
 		"type": "shell",
-		"command": "clear;make",
+		"command": "clear;cd .obj/debug;make",
 		"problemMatcher": {"owner": "cpp", "fileLocation": ["relative", "${workspaceFolder}"],
 			"pattern": {
 				"regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
