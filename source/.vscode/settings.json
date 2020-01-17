@@ -1,6 +1,8 @@
 {
 	"files.associations": {
-		"string_view": "cpp"
+		"string_view": "cpp",
+		"functional": "cpp",
+		"*.ipp": "cpp"
 	},
 	"window.title": "Google"
 }

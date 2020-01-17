@@ -27,34 +27,42 @@ namespace Jde::IO::Drive
 
 	Collections::UnorderedMap<string,vector<FilePtr>> _fileNames;
 	Collections::UnorderedMap<string,const Google::File> _fileIds;
-	VectorPtr<Google::FilePtr> LoadFiles( string_view q )noexcept(false)
+	VectorPtr<Google::FilePtr> LoadFiles( string_view q, bool trashed=false, uint max=std::numeric_limits<uint>::max() )noexcept(false)
 	{
 		//var token = Google::RefreshTokenFromSettings();
 		ostringstream query;
-		query << "trashed=false";
+		query << "trashed=" << (trashed ? "true" : "false");
 		if( q.size() )
 			query << q;
+		ostringstream fields;
+		fields <<"nextPageToken, files(id, name, mimeType, parents, md5Checksum, createdTime, modifiedTime, size";
+		if( trashed )
+			fields << ", trashedTime";
+		fields << ")";
 		ostringstream target;
 		target << "/drive/v3/files?"
 			<< "pageSize=" << 500
-			<< "&fields=" << Ssl::Encode( "nextPageToken, files(id, name, mimeType, parents, md5Checksum, createdTime, modifiedTime, size)" )
+			<< "&fields=" << Ssl::Encode( fields.str() )
 			<< "&q=" << Ssl::Encode( query.str() );
+		//DBG0( query.str() );
 		string nextPageToken;
 		auto pValues = make_shared<vector<Google::FilePtr>>();
-		do
+		Try( [&]()
 		{
-			var target2 = nextPageToken.size()>0 ? fmt::format("{}&pageToken={}", target.str(), nextPageToken) : target.str();
-			var result = Ssl::Get<FileList>( "www.googleapis.com", target2, Jde::Google::AuthorizationString() );
-			pValues->reserve( pValues->size()+result.Files.size() );
-			for( var& file : result.Files )
+			do
 			{
-				Google::FilePtr pFile = make_shared<const Google::File>( file );
-				_fileIds.Set( file.Id,  pFile );
-				pValues->push_back( pFile );
-			}
-			nextPageToken = result.NextPageToken;
-		} while ( nextPageToken.size()>0 );
-		
+				var target2 = nextPageToken.size()>0 ? fmt::format("{}&pageToken={}", target.str(), nextPageToken) : target.str();
+				var result = Ssl::Get<FileList>( "www.googleapis.com", target2, Jde::Google::AuthorizationString() );
+				pValues->reserve( pValues->size()+result.Files.size() );
+				for( var& file : result.Files )
+				{
+					Google::FilePtr pFile = make_shared<const Google::File>( file );
+					_fileIds.Set( file.Id,  pFile );
+					pValues->push_back( pFile );
+				}
+				nextPageToken = result.NextPageToken;
+			} while ( nextPageToken.size()>0 && pValues->size()<max );
+		});
 		return pValues;
 	}
 
@@ -101,7 +109,7 @@ namespace Jde::IO::Drive
 			auto pAdditional = LoadFiles( fmt::format(" and ({})", os.str()) );//not sure have all names for _fileNames.
 			pFiles->insert( pFiles->end(), pAdditional->begin(), pAdditional->end() );
 			os.clear();
-			os.str("");				
+			os.str("");
 		};
 		for( var idPath : parentIds )
 		{
@@ -195,11 +203,11 @@ namespace Jde::IO::Drive
 				var path = pFile->Path;
 				if( pFile->IsDirectory() )
 					parentIds.emplace( pFile->Id, path );
-				
+
 				var relativeDir = pFile->Path.string().substr( dirString.size()+1 );
 				entries.emplace( relativeDir, make_shared<const GoogleDirEntry>(*pFile) );
 			}
-			
+
 			if( parentIds.size()>0 )
 			{
 				auto pValues = LoadChildren( parentIds );
@@ -223,7 +231,7 @@ namespace Jde::IO::Drive
 		for( var& el : j.items() )
 			_mimeTypes.emplace( el.key(), el.value() );
 	}
-	
+
 	IDirEntryPtr GoogleDrive::CreateFolder( const fs::path& path, const IDirEntry& entry )
 	{
 		var parents = FindPath( path.parent_path() );
@@ -239,7 +247,7 @@ namespace Jde::IO::Drive
 		_fileIds.emplace( dir.Id, pFile );
 		return make_shared<GoogleDirEntry>( *pFile );
 	}
-		
+
 	void Upload( const fs::path& source, const fs::path& destination )
 	{
 		constexpr string_view separator="b303c718d23a4d2c94405b8efd2a7fda";
@@ -247,7 +255,7 @@ namespace Jde::IO::Drive
 		if( _mimeTypes.size()==0 )
 			LoadMimeTypes();
 		auto pType = _mimeTypes.find( source.extension().string() );
-		
+
 		string mimeType{ pType!=_mimeTypes.end() ? pType->second : string("octet-stream") };
 		var destinations = FindPath( destination );
 		if( destinations.size()!=1 )
@@ -279,7 +287,7 @@ namespace Jde::IO::Drive
 //		ostringstream osDebug;"dbs/market/securities/arca/IAI/2019-12-10.dat.xz"
 //		osDebug << nlohmann::json{result}; "/mnt/2TB/securities/arca/IAI/2019-12-10.dat.xz"
 //		DBG0( osDebug.str() );
-//		FindId( result.Id ); 
+//		FindId( result.Id );
 	}
 	IDirEntryPtr  GoogleDrive::Save( const fs::path& destination, const vector<char>& bytes, const IDirEntry& dirEntry, uint retry )noexcept(false) //environmental
 	{
@@ -295,7 +303,7 @@ namespace Jde::IO::Drive
 		auto pType = _mimeTypes.find( extension.size()>1 ? extension.substr(1) : extension );
 
 		const string mimeType{ pType!=_mimeTypes.end() ? pType->second : string("application/octet-stream") };
-		
+
 		var destinations = FindPath( destination.parent_path(), true );
 		if( destinations.size()!=1 )
 			THROW( IOException("destination {} found {} times.", destination.parent_path().string(), destinations.size()) );
@@ -349,7 +357,7 @@ namespace Jde::IO::Drive
 	{
 		throw Exception( "Not implemented." );//https://developers.google.com/drive/api/v3/reference/files/delete
 	}
-	
+
 	void GoogleDrive::Trash( const fs::path& path )noexcept(false)
 	{
 		//PATCH https://www.googleapis.com/drive/v3/files/fileId
@@ -361,5 +369,31 @@ namespace Jde::IO::Drive
 		var target{ fmt::format("/drive/v3/files/{}", pFile->Id) };
 		constexpr string_view body = "{\"trashed\":true}"sv;
 		auto dir = Ssl::Send<Google::File>( "www.googleapis.com", target, body, "application/json", Jde::Google::AuthorizationString(), http::verb::patch );
+	}
+	void GoogleDrive::TrashDisposal( TimePoint latestDate )noexcept(false)
+	{
+		uint count = 0;
+		ostringstream os;
+		string date = ToIsoString( latestDate );
+		os << " and modifiedTime<'" << date.substr(0,date.size()-1) << "'";
+		do
+		{
+			try
+			{
+				var pFiles = LoadFiles( os.str(), true, 10000 );
+				count = pFiles->size();
+				uint i=0;
+				for( var& pFile : *pFiles )
+				{
+					var target{ fmt::format("/drive/v3/files/{}", pFile->Id) };//https://developers.google.com/drive/api/v3/reference/files/delete
+					auto dir = Ssl::SendEmpty( "www.googleapis.com", target, Jde::Google::AuthorizationString(), http::verb::delete_ );
+					DBG( "deleted '{}' from GDrive {}/{}", pFile->Name, ++i, pFiles->size() );
+				}
+			}
+			catch( Exception&)
+			{
+				std::this_thread::sleep_for( 1min );
+			}
+		} while( count>0 );
 	}
 }

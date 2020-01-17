@@ -1,17 +1,17 @@
 {
 	"version": "2.0.0",
-	"tasks": 
+	"tasks":
 	[{
 		"label": "build",
 		"type": "shell",
-		"command": "tput reset; ../../Framework/cmake/buildc.sh ${workspaceFolder} debug",
+		"command": "tput reset; ../../Framework/cmake/buildc.sh ${workspaceFolder} asan",
 		"problemMatcher": { "base": "$gcc", "fileLocation": ["absolute"] },
 		"group": { "kind": "build", "isDefault": true }
 	},
 	{
 		"label": "clean",
 		"type": "shell",
-		"command": "clear;cd .obj/debug;make clean; cd ../RelWithDebInfo; make clean",
+		"command": "clear;cd .obj/asan;make clean; cd ../RelWithDebInfo; make clean",
 		"problemMatcher": {"owner": "cpp", "fileLocation": ["relative", "${workspaceFolder}"],
 			"pattern": {
 				"regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
@@ -22,7 +22,7 @@
 	{
 		"label": "rebuild",
 		"type": "shell",
-		"command": "tput reset;../../Framework/cmake/buildc.sh ${workspaceFolder} debug 1",
+		"command": "tput reset;../../Framework/cmake/buildc.sh ${workspaceFolder} asan 1",
 		"problemMatcher": {"owner": "cpp", "fileLocation": ["relative", "${workspaceFolder}"],
 			"pattern": {
 				"regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
@@ -55,12 +55,26 @@
 	{
 		"label": "make",
 		"type": "shell",
-		"command": "clear;cd .obj/debug;make",
+		"command": "clear;cd .obj/asan;make",
 		"problemMatcher": {"owner": "cpp", "fileLocation": ["relative", "${workspaceFolder}"],
 			"pattern": {
 				"regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
 				"file": 1, "line": 2, "column": 3, "severity": 4, "message": 5
 			}
 		}
+	},
+	{
+		"label": "echo",
+		"type": "shell",
+		"command": "clear;echo compile ${fileBasename}"
+	},
+	{
+		"type": "shell",
+		"label": "compile",
+		"command": "ccache",
+		"args": ["g++-8", "-O0","-g","-I${env:REPO_DIR}/boostorg/boost_1_72_0","-I${env:REPO_DIR}/spdlog/include/","-I${env:REPO_DIR}/json/include", "-Wall","-Wno-unknown-pragmas","-fsanitize=address","-fno-omit-frame-pointer","-pthread","-std=c++17","-include","${workspaceFolder}/.obj/asan/CMakeFiles/Jde.Google.dir/CMakeFiles/Jde.Google.dir/cmake_pch.hxx","-o","${workspaceFolder}/.obj/asan/CMakeFiles/Jde.Google.dir/${fileBasename}.o","-c", "${file}"],
+		"problemMatcher": ["$gcc"],
+		"dependsOrder": "sequence",
+		"dependsOn": ["echo"],
 	}]
 }

@@ -20,5 +20,6 @@ namespace Jde::IO::Drive
 		VectorPtr<char> Load( const IDirEntry& dirEntry )noexcept(false) override;
 		void Remove( const fs::path& path )noexcept(false) override;
 		void Trash( const fs::path& path )noexcept(false) override;
+		void TrashDisposal( TimePoint latestDate )noexcept(false) override;
 	};
 }
