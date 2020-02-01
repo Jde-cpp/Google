@@ -9,8 +9,8 @@ namespace Jde::IO::Drive
 {
 	struct GoogleDrive final:	public IDrive
 	{
-		GoogleDrive(){ DBG0("GoogleDrive::GoogleDrive"); };
-		~GoogleDrive(){ DBG0("GoogleDrive::~GoogleDrive"); }
+		GoogleDrive(){ DBG0("GoogleDrive::GoogleDrive"sv); };
+		~GoogleDrive(){ DBG0("GoogleDrive::~GoogleDrive"sv); }
 		map<string,IDirEntryPtr> Recursive( const fs::path& dir )noexcept(false) override;
 		IDirEntryPtr Get( const fs::path& path )noexcept(false){ THROW( Exception("Not Implemented") ); }
 		IDirEntryPtr Save( const fs::path& path, const vector<char>& bytes, const IDirEntry& dirEntry )noexcept(false) override{ return Save( path, bytes, dirEntry, 0 ); }

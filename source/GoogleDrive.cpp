@@ -127,7 +127,7 @@ namespace Jde::IO::Drive
 			if( pParent!=parentIds.end() )
 				pFile->Path = pParent->second/pFile->Name;
 			else
-				CRITICAL( "Could not find '{}' parent, ie multiple parents.", pFile->Parents.size() ? pFile->Parents[0] : "" );
+				CRITICAL( "Could not find '{}' parent, ie multiple parents."sv, pFile->Parents.size() ? pFile->Parents[0] : "" );
 		}
 		return pFiles;
 	}
@@ -329,7 +329,7 @@ namespace Jde::IO::Drive
 		{
 			if( e.ErrorCode!=502 || retry>5 )
 				throw e;
-			WARN( "googleapis returned 502, waiting 30 seconds. retry={}", retry );
+			WARN( "googleapis returned 502, waiting 30 seconds. retry={}"sv, retry );
 			std::this_thread::sleep_for( 30s );
 			return Save( destination, bytes, dirEntry, ++retry );
 		}
@@ -387,7 +387,7 @@ namespace Jde::IO::Drive
 				{
 					var target{ fmt::format("/drive/v3/files/{}", pFile->Id) };//https://developers.google.com/drive/api/v3/reference/files/delete
 					auto dir = Ssl::SendEmpty( "www.googleapis.com", target, Jde::Google::AuthorizationString(), http::verb::delete_ );
-					DBG( "deleted '{}' from GDrive {}/{}", pFile->Name, ++i, pFiles->size() );
+					DBG( "deleted '{}' from GDrive {}/{}"sv, pFile->Name, ++i, pFiles->size() );
 				}
 			}
 			catch( Exception&)

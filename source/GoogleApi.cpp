@@ -15,7 +15,7 @@ namespace Jde
 			return pExisting->second;
 
 		var& result = _tokens[body] = Ssl::Send<AccessToken>( "oauth2.googleapis.com", "/token", body );
-		DBG( "received token expires in '{}' minutes.", duration_cast<std::chrono::minutes>(result.Expiration-Clock::now()).count() );
+		DBG( "received token expires in '{}' minutes."sv, duration_cast<std::chrono::minutes>(result.Expiration-Clock::now()).count() );
 		const fs::path path{ GoogleSettingsPtr->Get<fs::path>( "saveFile" ) };
 		nlohmann::json j;
 		j["key"] = body;
@@ -48,12 +48,12 @@ namespace Jde
 					auto token2{ tokenJson.get<AccessToken>() };
 					var delta = Clock::now()-DateTime( time ).GetTimePoint();
 					token2.Expiration-=delta;
-					DBG( "Adding saved token expires in {} minutes", duration_cast<std::chrono::minutes>(token2.Expiration-Clock::now()).count() );
+					DBG( "Adding saved token expires in {} minutes"sv, duration_cast<std::chrono::minutes>(token2.Expiration-Clock::now()).count() );
 					_tokens.emplace( key, token2 );
 				}
 				catch( const std::exception& e )
 				{
-					DBG( "Could not parse '{}' - {}", path.string(), e.what() );
+					DBG( "Could not parse '{}' - {}"sv, path.string(), e.what() );
 				}
 			}
 		}
