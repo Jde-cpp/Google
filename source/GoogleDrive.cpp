@@ -111,7 +111,7 @@ namespace Jde::IO::Drive
 			os.clear();
 			os.str("");
 		};
-		for( var idPath : parentIds )
+		for( var& idPath : parentIds )
 		{
 			if( os.tellp() )
 				os << " or ";
@@ -121,7 +121,7 @@ namespace Jde::IO::Drive
 		}
 		if( os.tellp() )
 			load();
-		for( var pFile : *pFiles )
+		for( var& pFile : *pFiles )
 		{
 			var pParent = pFile->Parents.size()>0 ? parentIds.find( pFile->Parents[0] ) : parentIds.end();
 			if( pParent!=parentIds.end() )
@@ -156,7 +156,7 @@ namespace Jde::IO::Drive
 					find = [&find]( Google::FilePtr pFile, const fs::path& current )
 					{
 						bool result = false;
-						for( var parentId : pFile->Parents )
+						for( var& parentId : pFile->Parents )
 						{
 							var pParent = FindId( parentId );
 							if( pParent )
@@ -193,10 +193,10 @@ namespace Jde::IO::Drive
 
 		map<string,IDirEntryPtr> entries;
 		var dirString = dir.string();
-		std::function<void(vector<Google::FilePtr>)> process = [&dir, &dirString, &entries, &process]( const vector<Google::FilePtr>& files )
+		std::function<void(vector<Google::FilePtr>)> process = [&dirString, &entries, &process]( const vector<Google::FilePtr>& files )
 		{
 			map<string,fs::path> parentIds;
-			for( var pFile : files )
+			for( var& pFile : files )
 			{
 				var pParent = pFile->Parents.size()>0 ? FindId( pFile->Parents[0] ) : Google::FilePtr{};
 				ASSERT( pParent );
