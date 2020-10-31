@@ -327,7 +327,7 @@ namespace Jde::IO::Drive
 		}
 		catch( const IOException& e )
 		{
-			if( e.ErrorCode!=502 || retry>5 )
+			if( e.ErrorCode()!=502 || retry>5 )
 				throw e;
 			WARN( "googleapis returned 502, waiting 30 seconds. retry={}"sv, retry );
 			std::this_thread::sleep_for( 30s );
