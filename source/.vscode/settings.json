@@ -2,7 +2,10 @@
 	"files.associations": {
 		"string_view": "cpp",
 		"functional": "cpp",
-		"*.ipp": "cpp"
+		"*.ipp": "cpp",
+		"vector": "cpp",
+		"iosfwd": "cpp",
+		"iterator": "cpp"
 	},
 	"window.title": "Google"
 }

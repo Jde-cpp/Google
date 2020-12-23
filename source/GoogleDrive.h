@@ -11,15 +11,17 @@ namespace Jde::IO::Drive
 	{
 		GoogleDrive(){ DBG0("GoogleDrive::GoogleDrive"sv); };
 		~GoogleDrive(){ DBG0("GoogleDrive::~GoogleDrive"sv); }
-		map<string,IDirEntryPtr> Recursive( const fs::path& dir )noexcept(false) override;
-		IDirEntryPtr Get( const fs::path& path )noexcept(false) override{ THROW( Exception("Not Implemented") ); }
-		IDirEntryPtr Save( const fs::path& path, const vector<char>& bytes, const IDirEntry& dirEntry )noexcept(false) override{ return Save( path, bytes, dirEntry, 0 ); }
-		IDirEntryPtr Save( const fs::path& path, const vector<char>& bytes, const IDirEntry& dirEntry, uint retry )noexcept(false);
-		IDirEntryPtr CreateFolder( const fs::path& path, const IDirEntry& dirEntry )noexcept(false) override;
-		//VectorPtr<char> Load( const fs::path& path )noexcept(false) override;
+		map<string,IDirEntryPtr> Recursive( path dir )noexcept(false) override;
+		IDirEntryPtr Get( path path )noexcept(false) override{ THROW( Exception("Not Implemented") ); }
+		void SoftLink( path existingFile, path newSymLink )noexcept(false) override{ THROW( Exception("Not Implemented") ); }
+		IDirEntryPtr Save( path path, const vector<char>& bytes, const IDirEntry& dirEntry )noexcept(false) override{ return Save( path, bytes, dirEntry, 0 ); }
+		IDirEntryPtr Save( path path, const vector<char>& bytes, const IDirEntry& dirEntry, uint retry )noexcept(false);
+		IDirEntryPtr CreateFolder( path path, const IDirEntry& dirEntry )noexcept(false) override;
+		//VectorPtr<char> Load( path path )noexcept(false) override;
 		VectorPtr<char> Load( const IDirEntry& dirEntry )noexcept(false) override;
-		void Remove( const fs::path& path )noexcept(false) override;
-		void Trash( const fs::path& path )noexcept(false) override;
+		void Remove( path path )noexcept(false) override;
+		void Trash( path path )noexcept(false) override;
 		void TrashDisposal( TimePoint latestDate )noexcept(false) override;
+		void Restore( sv name )noexcept(false) override;
 	};
 }

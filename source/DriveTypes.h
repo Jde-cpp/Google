@@ -9,7 +9,7 @@ namespace Jde::IO::Drive::Google
 	{
 		File()noexcept;
 		//File( const File& file );
-		File( const File& file, const fs::path& path)noexcept;
+		File( const File& file, path path)noexcept;
 		File( const IDirEntry& entry, string_view parentId )noexcept;
 		bool IsDirectory()const noexcept{ return MimeType=="application/vnd.google-apps.folder"; }
 
@@ -147,7 +147,7 @@ namespace Jde::IO::Drive::Google
 	};
 	inline void to_json( nlohmann::json& j, const FileList& object )
 	{
-		//nlohmann::json j2 = 
+		//nlohmann::json j2 =
 		j = { {"kind", object.Kind}, {"nextPageToken", object.NextPageToken}, {"incompleteSearch", object.IncompleteSearch}, {"files", object.Files} };
 	}
 	inline void from_json( const nlohmann::json& j, FileList& object )

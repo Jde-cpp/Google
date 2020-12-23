@@ -6,12 +6,12 @@ namespace Jde::IO::Drive::Google
 	File::File()noexcept
 	{}
 
-	File::File( const File& file, const fs::path& path)noexcept:
+	File::File( const File& file, path path)noexcept:
 		File{ file }
 	{
 		Path = path;
 	}
-	
+
 /*	File::File( const File& file )//:
 		// Id{ file.Id },
 		// CreatedTime{file.CreatedTime},
