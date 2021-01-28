@@ -33,11 +33,10 @@ namespace Jde::Google
 		if( j.find("token_type")!=j.end() )
 			j.at("token_type").get_to( token.Type );
 	}
-	
+
 	extern shared_ptr<Jde::Settings::Container> GoogleSettingsPtr;
 	const AccessToken& RefreshToken( string_view refreshToken, string_view clientId, string_view secret )noexcept(false);
 	const AccessToken& RefreshTokenFromSettings()noexcept(false);
 	string AuthorizationString();
-
 	#undef var
 }

@@ -68,5 +68,4 @@ namespace Jde
 		var token = RefreshTokenFromSettings();
 		return fmt::format( "{} {}", token.Type, token.Token );
 	}
-
 }

@@ -3,13 +3,13 @@
 #include "../../Framework/source/io/DiskWatcher.h"
 //#include "io/drive/DriveApi.h"
 
-extern "C" JDE_GOOGLE_EXPORT Jde::IO::IDrive* LoadDrive();
+extern "C" JDE_GOOGLE_EXPORT Jde::IO::IDrive* LoadDrive()noexcept;
 
 namespace Jde::IO::Drive
 {
 	struct GoogleDrive final:	public IDrive
 	{
-		GoogleDrive(){ DBG0("GoogleDrive::GoogleDrive"sv); };
+		GoogleDrive()noexcept{ DBG0("GoogleDrive::GoogleDrive"sv); };
 		~GoogleDrive(){ DBG0("GoogleDrive::~GoogleDrive"sv); }
 		map<string,IDirEntryPtr> Recursive( path dir )noexcept(false) override;
 		IDirEntryPtr Get( path path )noexcept(false) override{ THROW( Exception("Not Implemented") ); }

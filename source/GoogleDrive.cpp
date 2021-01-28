@@ -4,7 +4,7 @@
 
 #define var const auto
 
-Jde::IO::IDrive* LoadDrive()
+Jde::IO::IDrive* LoadDrive()noexcept
 {
 	return new Jde::IO::Drive::GoogleDrive();
 }
