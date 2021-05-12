@@ -1,5 +1,7 @@
 #pragma once
-
+DISABLE_WARNINGS
+#include <nlohmann/json.hpp>
+ENABLE_WARNINGS
 namespace Jde::IO{ struct IDirEntry; }
 
 namespace Jde::IO::Drive::Google
@@ -10,7 +12,7 @@ namespace Jde::IO::Drive::Google
 		File()noexcept;
 		//File( const File& file );
 		File( const File& file, path path)noexcept;
-		File( const IDirEntry& entry, string_view parentId )noexcept;
+		File( const IDirEntry& entry, sv parentId )noexcept;
 		bool IsDirectory()const noexcept{ return MimeType=="application/vnd.google-apps.folder"; }
 
 		string Id{"root"};

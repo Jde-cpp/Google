@@ -1,8 +1,8 @@
-#include <nlohmann/json.hpp>
+#include <jde/TypeDefs.h>
+DISABLE_WARNINGS
 
-#pragma warning( disable : 4245) 
 #include <boost/crc.hpp> 
-#pragma warning( default : 4245) 
+
 #include <boost/noncopyable.hpp>
 #include <boost/system/error_code.hpp>
 #ifndef __INTELLISENSE__
@@ -11,20 +11,21 @@
 	#include <spdlog/fmt/ostr.h>
 #endif
 
-#include "DateTime.h"
-#include "Exception.h"
-#include "JdeAssert.h"
-#include "TypeDefs.h"
-#include "log/Logging.h"
-#include "Settings.h"
-#include "collections/UnorderedMap.h"
-#include "io/File.h"
-#include "../../Ssl/source/Ssl.h"
+ENABLE_WARNINGS 
+#include "../../Framework/source/DateTime.h"
+//#include <jde/Exception.h>
+#include <jde/Assert.h>
+
+#include <jde/Log.h>
+//#include "../../Framework/source/Settings.h"
+#include "../../Framework/source/collections/UnorderedMap.h"
+//#include <jde/io/File.h>
+//#include "../../Ssl/source/Ssl.h"
 
 
 namespace Jde
 {
-	using nlohmann::json;
+	//using nlohmann::json;
 	using Collections::UnorderedMap;
 }
 

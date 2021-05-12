@@ -35,7 +35,7 @@ namespace Jde::IO::Drive::Google
 		Size=file.Size;
 	}
 	*/
-	File::File( const IDirEntry& entry, string_view parentId )noexcept:
+	File::File( const IDirEntry& entry, sv parentId )noexcept:
 		Id{""},
 		CreatedTime{ entry.CreatedTime },
 		ModifiedTime{ entry.CreatedTime },

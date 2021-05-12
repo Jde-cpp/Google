@@ -10,9 +10,9 @@
 	#ifdef _MSC_VER
 		#define JDE_GOOGLE_EXPORT __declspec( dllimport )
 		#if NDEBUG
-			#pragma comment(lib, "Jde.IO.Drive.Google.lib")
+			#pragma comment(lib, "Jde.Google.lib")
 		#else
-			#pragma comment(lib, "Jde.IO.Drive.Google.lib")
+			#pragma comment(lib, "Jde.Google.lib")
 		#endif
 	#else
 		#define JDE_GOOGLE_EXPORT

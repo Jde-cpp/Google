@@ -1,4 +1,6 @@
 #pragma once
+#include <nlohmann/json.hpp>
+#include "../../Framework/source/Settings.h"
 
 namespace Jde::Google
 {
@@ -35,7 +37,7 @@ namespace Jde::Google
 	}
 
 	extern shared_ptr<Jde::Settings::Container> GoogleSettingsPtr;
-	const AccessToken& RefreshToken( string_view refreshToken, string_view clientId, string_view secret )noexcept(false);
+	const AccessToken& RefreshToken( sv refreshToken, sv clientId, sv secret )noexcept(false);
 	const AccessToken& RefreshTokenFromSettings()noexcept(false);
 	string AuthorizationString();
 	#undef var
