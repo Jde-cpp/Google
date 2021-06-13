@@ -14,20 +14,15 @@ target_link_libraries(Jde.Google stdc++fs)
 #######################################################
 target_precompile_headers(Jde.Google
   PRIVATE
-	<nlohmann/json.hpp>
-	<boost/crc.hpp> 
+  <jde/TypeDefs.h>
+	<boost/crc.hpp>
 	<boost/noncopyable.hpp>
 	<boost/system/error_code.hpp>
 	<spdlog/spdlog.h>
 	<spdlog/sinks/basic_file_sink.h>
 	<spdlog/fmt/ostr.h>
 	"../../Framework/source/DateTime.h"
-	"../../Framework/source/Exception.h"
-	"../../Framework/source/JdeAssert.h"
-	"../../Framework/source/TypeDefs.h"
-	"../../Framework/source/log/Logging.h"
-	"../../Framework/source/Settings.h"
+	<jde/Assert.h>
+	<jde/Log.h>
 	"../../Framework/source/collections/UnorderedMap.h"
-	"../../Framework/source/io/File.h"
-	"../../Ssl/source/Ssl.h"
 )
