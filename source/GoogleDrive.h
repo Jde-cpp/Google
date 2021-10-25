@@ -11,8 +11,8 @@ namespace Jde::IO::Drive
 		GoogleDrive()noexcept{ DBG("GoogleDrive::GoogleDrive"sv); };
 		~GoogleDrive(){ DBG("GoogleDrive::~GoogleDrive"sv); }
 		map<string,IDirEntryPtr> Recursive( path dir )noexcept(false) override;
-		IDirEntryPtr Get( path path )noexcept(false) override{ THROW( Exception("Not Implemented") ); }
-		void SoftLink( path existingFile, path newSymLink )noexcept(false) override{ THROW( Exception("Not Implemented") ); }
+		IDirEntryPtr Get( path path )noexcept(false) override{ THROW( "Not Implemented" ); }
+		void SoftLink( path existingFile, path newSymLink )noexcept(false) override{ THROW( "Not Implemented" ); }
 		IDirEntryPtr Save( path path, const vector<char>& bytes, const IDirEntry& dirEntry )noexcept(false) override{ return Save( path, bytes, dirEntry, 0 ); }
 		IDirEntryPtr Save( path path, const vector<char>& bytes, const IDirEntry& dirEntry, uint retry )noexcept(false);
 		IDirEntryPtr CreateFolder( path path, const IDirEntry& dirEntry )noexcept(false) override;

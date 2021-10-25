@@ -21,7 +21,6 @@ namespace Jde::IO::Drive
 			IDirEntry{ file.IsDirectory() ? EFileFlags::Directory : EFileFlags::None, file.Path, file.Size, file.CreatedTime, file.ModifiedTime },
 			File2{ file }
 		{}
-		//bool IsDirectory()const noexcept override{ return File.IsDirectory(); }
 		Google::File File2;
 	};
 	typedef sp<const GoogleDirEntry> GoogleDirEntryPtr;
@@ -30,7 +29,6 @@ namespace Jde::IO::Drive
 	Collections::UnorderedMap<string,const Google::File> _fileIds;
 	VectorPtr<FilePtr> LoadFiles( sv q, bool trashed=false, uint max=std::numeric_limits<uint>::max() )noexcept(false)
 	{
-		//var token = Google::RefreshTokenFromSettings();
 		ostringstream query;
 		query << "trashed=" << (trashed ? "true" : "false");
 		if( q.size() )
@@ -45,7 +43,6 @@ namespace Jde::IO::Drive
 			<< "pageSize=" << 500
 			<< "&fields=" << Ssl::Encode( fields.str() )
 			<< "&q=" << Ssl::Encode( query.str() );
-		//DBG0( query.str() );
 		string nextPageToken;
 		auto pValues = make_shared<vector<FilePtr>>();
 		Try( [&]()
@@ -92,7 +89,6 @@ namespace Jde::IO::Drive
 			ostringstream target;
 			target << "/drive/v3/files/" << id
 				<< "?fields=" << Ssl::Encode("id, name, parents, md5Checksum, createdTime, modifiedTime, size");
-			//<< "?fields=*";
 
 			pFile = make_shared<Google::File>( Ssl::Get<Google::File>( "www.googleapis.com", target.str(), Jde::Google::AuthorizationString()) );
 			_fileIds.Set( id, pFile );
@@ -132,7 +128,6 @@ namespace Jde::IO::Drive
 		}
 		return pFiles;
 	}
-//1EnVsIXP_QgIsI576Qy1NvphQAqyGw2Fz
 	vector<FilePtr> FindPath( path path, bool directory=false )noexcept(false)
 	{
 		vector<FilePtr> found;
@@ -146,10 +141,6 @@ namespace Jde::IO::Drive
 				found.push_back( pExisting );
 			else
 			{
-				//UnorderedMap<string,const Google::File> _fileIds;
-				//if( path.stem().string()!=path.filename().string() )
-				//	DBG( "stem={}, filename={}", path.stem().string(), path.filename().string() );
-
 				auto pFiles = FindName(path.filename().string(), directory );//
 				for( auto pFile : *pFiles )
 				{
@@ -182,15 +173,11 @@ namespace Jde::IO::Drive
 		return found;
 	}
 
-
-	//WindowsDrive::Recursive( path path )noexcept(false) override;
 	map<string,IDirEntryPtr> GoogleDrive::Recursive( path dir )noexcept(false)
 	{
 		var values = FindPath( dir );
-		if( values.size()==0 )
-			THROW( IOException("'{}' does not exist.", dir) );
-		if( values.size()>1 )
-			THROW( IOException("'{}' has '{}' entries.", dir, values.size()) );
+		THROW_IFX( values.size()==0, IOException(dir, "does not exist.") );
+		THROW_IFX( values.size()>1, IOException(dir, "Has '{}' entries.", values.size()) );
 
 		map<string,IDirEntryPtr> entries;
 		var dirString = dir.string();
@@ -236,8 +223,7 @@ namespace Jde::IO::Drive
 	IDirEntryPtr GoogleDrive::CreateFolder( path path, const IDirEntry& entry )
 	{
 		var parents = FindPath( path.parent_path() );
-		if( parents.size()!=1 )
-			THROW( IOException("destination {} found {} times.", path.string(), parents.size()) );
+		THROW_IFX( parents.size()!=1, IOException(path, "destination found {} times.", parents.size()) );
 		Google::File file{ entry, parents[0]->Id };
 		file.CreatedTime = TimePoint();
 		nlohmann::json j = file;
@@ -259,8 +245,7 @@ namespace Jde::IO::Drive
 
 		string mimeType{ pType!=_mimeTypes.end() ? pType->second : string("octet-stream") };
 		var destinations = FindPath( destination );
-		if( destinations.size()!=1 )
-			THROW( IOException("destination {} found {} times.", destination.string(), destinations.size()) );
+		THROW_IFX( destinations.size()!=1, IOException(destination, "destination found {} times.", destinations.size()) );
 		Google::FileRequestBody request;  request.MimeType = mimeType; request.Name = request.OriginalFilename=source.filename().string();request.Parents.push_back( destinations[0]->Id );
 
 		var pBinary = IO::FileUtilities::LoadBinary(source);
@@ -306,10 +291,8 @@ namespace Jde::IO::Drive
 		const string mimeType{ pType!=_mimeTypes.end() ? pType->second : string("application/octet-stream") };
 
 		var destinations = FindPath( destination.parent_path(), true );
-		if( destinations.size()!=1 )
-			THROW( IOException("destination {} found {} times.", destination.parent_path().string(), destinations.size()) );
+		THROW_IFX( destinations.size()!=1, IOException(destination, "destination found {} times.", destinations.size()) );
 
-		//DBG0( destination.root_directory().string() );
 		Google::FileRequestBody request;  request.MimeType = mimeType; request.CreatedTime = dirEntry.CreatedTime; request.ModifiedTime = dirEntry.ModifiedTime; request.Name = request.OriginalFilename=destination.filename().string();request.Parents.push_back( destinations[0]->Id );
 
 		ostringstream os;
@@ -318,7 +301,7 @@ namespace Jde::IO::Drive
 			<< nlohmann::json{request}[0] << endl<< endl
 			<< "--" << separator << std::endl
 			<< "Content-Type: " << mimeType << endl << endl;
-		//DBG0( os.str() );
+
 		os.write( bytes.data(), bytes.size() );
 		os	<< endl << "--" << separator << "--";
 		try
@@ -336,7 +319,6 @@ namespace Jde::IO::Drive
 		}
 	}
 
-	//VectorPtr<char> GoogleDrive::Load( path path )noexcept(false)
 	VectorPtr<char> GoogleDrive::Load( const IDirEntry& dirEntry )noexcept(false)
 	{
 		auto pEntry = dynamic_cast<const GoogleDirEntry*>( &dirEntry );
@@ -344,8 +326,7 @@ namespace Jde::IO::Drive
 		if( !pEntry )
 		{
 			var files = FindPath( dirEntry.Path );
-			if( files.size()!=1 )
-				THROW( IOException("found '{}' entries for '{}'.", files.size(), dirEntry.Path.string()) );
+			THROW_IFX( files.size()!=1, IOException(dirEntry.Path, "found '{}' entries for '{}'.", files.size()) );
 			pFound = make_shared<GoogleDirEntry>( *files[0] );
 			pEntry = pFound.get();
 		}
@@ -363,9 +344,7 @@ namespace Jde::IO::Drive
 	{
 		//PATCH https://www.googleapis.com/drive/v3/files/fileId
 		//https://www.googleapis.com/drive/v2/files/fileId/trash
-		auto files = FindPath( path );
-		if( files.size()!=1 )
-			THROW( Exception("Could not find '{}'. files.size()='{}'", path.string(), files.size()) );
+		auto files = FindPath( path ); THROW_IFX( files.size()!=1, IOException(path, "Could not find. files.size()='{}'", files.size()) );
 		auto pFile = files.front();
 		var target{ format("/drive/v3/files/{}", pFile->Id) };
 		constexpr sv body = "{\"trashed\":true}"sv;
@@ -391,7 +370,7 @@ namespace Jde::IO::Drive
 					DBG( "deleted '{}' from GDrive {}/{}"sv, pFile->Name, ++i, pFiles->size() );
 				}
 			}
-			catch( Exception&)
+			catch( const IException& )
 			{
 				std::this_thread::sleep_for( 1min );
 			}
@@ -414,7 +393,7 @@ namespace Jde::IO::Drive
 					DBG( "restored '{}' from GDrive {}/{}"sv, pFile->Name, ++i, pFiles->size() );
 				}
 			}
-			catch( Exception& )
+			catch( const IException& )
 			{
 				std::this_thread::sleep_for( 1min );
 			}
