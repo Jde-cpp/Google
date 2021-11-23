@@ -96,7 +96,7 @@ namespace Jde::IO::Drive
 		return pFile;
 	}
 
-	VectorPtr<FilePtr> LoadChildren( const map<string,fs::path>& parentIds )noexcept(false)
+	VectorPtr<FilePtr> LoadChildren( const flat_map<string,fs::path>& parentIds )noexcept(false)
 	{
 		ASSERT( parentIds.size() );
 		auto pFiles = make_shared<vector<FilePtr>>();
@@ -173,17 +173,17 @@ namespace Jde::IO::Drive
 		return found;
 	}
 
-	map<string,IDirEntryPtr> GoogleDrive::Recursive( path dir )noexcept(false)
+	flat_map<string,IDirEntryPtr> GoogleDrive::Recursive( path dir )noexcept(false)
 	{
 		var values = FindPath( dir );
 		THROW_IFX( values.size()==0, IOException(dir, "does not exist.") );
 		THROW_IFX( values.size()>1, IOException( SRCE_CUR, dir, "Has '{}' entries.", values.size()) );
 
-		map<string,IDirEntryPtr> entries;
+		flat_map<string,IDirEntryPtr> entries;
 		var dirString = dir.string();
 		std::function<void(vector<FilePtr>)> process = [&dirString, &entries, &process]( const vector<FilePtr>& files )
 		{
-			map<string,fs::path> parentIds;
+			flat_map<string,fs::path> parentIds;
 			for( var& pFile : files )
 			{
 				var pParent = pFile->Parents.size()>0 ? FindId( pFile->Parents[0] ) : FilePtr{};
@@ -202,12 +202,12 @@ namespace Jde::IO::Drive
 				process( *pValues );
 			}
 		};
-		process( *LoadChildren(map<string,fs::path>{{values[0]->Id, dir}}) );
+		process( *LoadChildren(flat_map<string,fs::path>{{values[0]->Id, dir}}) );
 
 		return entries;
 	}
 
-	map<string,string> _mimeTypes;
+	flat_map<string,string> _mimeTypes;
 	void LoadMimeTypes()noexcept(false)
 	{
 		var path = fs::current_path()/"mimetypes.json"; CHECK_PATH( path );

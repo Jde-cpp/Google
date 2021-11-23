@@ -36,7 +36,7 @@ namespace Jde::Google
 			j.at("token_type").get_to( token.Type );
 	}
 
-	extern shared_ptr<Jde::Settings::Container> GoogleSettingsPtr;
+	extern sp<Jde::Settings::Container> GoogleSettingsPtr;
 	const AccessToken& RefreshToken( sv refreshToken, sv clientId, sv secret )noexcept(false);
 	const AccessToken& RefreshTokenFromSettings()noexcept(false);
 	string AuthorizationString();

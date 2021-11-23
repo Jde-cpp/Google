@@ -4,8 +4,8 @@
 
 namespace Jde
 {
-	map<string,Google::AccessToken> _tokens; shared_mutex _tokenMutex;
-	shared_ptr<Jde::Settings::Container> Google::GoogleSettingsPtr;
+	flat_map<string,Google::AccessToken> _tokens; shared_mutex _tokenMutex;
+	sp<Jde::Settings::Container> Google::GoogleSettingsPtr;
 
 	const Google::AccessToken& Google::RefreshToken( sv refreshToken, sv clientId, sv secret )noexcept(false)
 	{
