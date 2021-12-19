@@ -307,10 +307,10 @@ namespace Jde::IO::Drive
 			var result = Ssl::Send<Google::File>( "www.googleapis.com", "/upload/drive/v3/files?uploadType=multipart", os.str(), contentType, Jde::Google::AuthorizationString() );
 			return make_shared<GoogleDirEntry>( result );
 		}
-		catch( const IOException& e )
+		catch( IOException& e )
 		{
-			if( e.ErrorCode()!=502 || retry>5 )
-				throw e;
+			if( e.Code!=502 || retry>5 )
+				throw move(e);
 			WARN( "googleapis returned 502, waiting 30 seconds. retry={}"sv, retry );
 			std::this_thread::sleep_for( 30s );
 			return Save( destination, bytes, dirEntry, ++retry );
