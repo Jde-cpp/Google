@@ -1,4 +1,4 @@
-#include "GoogleApi.h"
+﻿#include "GoogleApi.h"
 #include "../../Ssl/source/Ssl.h"
 #define var const auto
 
@@ -17,7 +17,7 @@ namespace Jde
 
 		var& result = _tokens[body] = Ssl::Send<AccessToken>( "oauth2.googleapis.com", "/token", body );
 		DBG( "received token expires in '{}' minutes."sv, duration_cast<std::chrono::minutes>(result.Expiration-Clock::now()).count() );
-		const fs::path path{ GoogleSettingsPtr->Get<fs::path>( "saveFile" ) };
+		const fs::path path{ GoogleSettingsPtr->Getɛ<fs::path>( "saveFile" ) };
 		nlohmann::json j;
 		j["key"] = body;
 		j["time"] = DateTime(Clock::now()).ToIsoString();
@@ -35,7 +35,7 @@ namespace Jde
 			GoogleSettingsPtr = Settings::Global().SubContainer( "google" );
 			// if( !GoogleSettingsPtr )
 			// 	THROW( EnvironmentException("Could not find google settings.") );
-			const fs::path path{ GoogleSettingsPtr->Get<fs::path>( "saveFile" ) };
+			const fs::path path{ GoogleSettingsPtr->Getɛ<fs::path>( "saveFile" ) };
 			if( fs::exists(path) )
 			{
 				try
@@ -58,9 +58,9 @@ namespace Jde
 				}
 			}
 		}
-		const string refreshToken{GoogleSettingsPtr->Get<string>("refreshToken") };
-		const string clientId{GoogleSettingsPtr->Get<string>("clientId") };
-		const string secret{GoogleSettingsPtr->Get<string>("secret") };
+		const string refreshToken{ GoogleSettingsPtr->Getɛ<string>("refreshToken") };
+		const string clientId{ GoogleSettingsPtr->Getɛ<string>("clientId") };
+		const string secret{ GoogleSettingsPtr->Getɛ<string>("secret") };
 
 		return RefreshToken( refreshToken, clientId, secret );
 	}
