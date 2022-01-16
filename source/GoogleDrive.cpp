@@ -210,7 +210,7 @@ namespace Jde::IO::Drive
 	flat_map<string,string> _mimeTypes;
 	void LoadMimeTypes()noexcept(false)
 	{
-		var path = fs::current_path()/"mimetypes.json"; CHECK_PATH( path );
+		var path = fs::current_path()/"mimetypes.json"; CHECK_PATH( path, SRCE_CUR );
 		std::ifstream is{ path };
 		nlohmann::json j;
 		is >> j;
