@@ -173,7 +173,7 @@ namespace Jde::IO::Drive
 		return found;
 	}
 
-	flat_map<string,IDirEntryPtr> GoogleDrive::Recursive( path dir )noexcept(false)
+	flat_map<string,IDirEntryPtr> GoogleDrive::Recursive( path dir, SL )noexcept(false)
 	{
 		var values = FindPath( dir );
 		THROW_IFX( values.size()==0, IOException(dir, "does not exist.") );
