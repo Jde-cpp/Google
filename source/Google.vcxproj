@@ -64,7 +64,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>Jde_Google_EXPORTS;BOOST_ALL_DYN_LINK;ONE_CORE;WIN32_LEAN_AND_MEAN;_DEBUG;DLL1_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>Jde_Google_EXPORTS;BOOST_ALL_DYN_LINK;ONE_CORE;WIN32_LEAN_AND_MEAN;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;_DEBUG;DLL1_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -95,7 +95,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>Jde_Google_EXPORTS;BOOST_ALL_DYN_LINK;ONE_CORE;WIN32_LEAN_AND_MEAN;NDEBUG;DLL1_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>Jde_Google_EXPORTS;BOOST_ALL_DYN_LINK;ONE_CORE;WIN32_LEAN_AND_MEAN;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NDEBUG;DLL1_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp20</LanguageStandard>
