@@ -177,7 +177,7 @@ namespace Jde::IO::Drive
 	{
 		var values = FindPath( dir );
 		THROW_IFX( values.size()==0, IOException(dir, "does not exist.") );
-		THROW_IFX( values.size()>1, IOException( SRCE_CUR, dir, "Has '{}' entries.", values.size()) );
+		THROW_IFX( values.size()>1, IOException( SRCE_CUR, dir, ELogLevel::Error, "Has '{}' entries.", values.size()) );
 
 		flat_map<string,IDirEntryPtr> entries;
 		var dirString = dir.string();
@@ -221,7 +221,7 @@ namespace Jde::IO::Drive
 	IDirEntryPtr GoogleDrive::CreateFolder( path path, const IDirEntry& entry )
 	{
 		var parents = FindPath( path.parent_path() );
-		THROW_IFX( parents.size()!=1, IOException(SRCE_CUR, path, "destination found {} times.", parents.size()) );
+		THROW_IFX( parents.size()!=1, IOException(SRCE_CUR, path, ELogLevel::Error, "destination found {} times.", parents.size()) );
 		Google::File file{ entry, parents[0]->Id };
 		file.CreatedTime = TimePoint();
 		nlohmann::json j = file;
@@ -243,7 +243,7 @@ namespace Jde::IO::Drive
 
 		string mimeType{ pType!=_mimeTypes.end() ? pType->second : string("octet-stream") };
 		var destinations = FindPath( destination );
-		THROW_IFX( destinations.size()!=1, IOException(SRCE_CUR, destination, "destination found {} times.", destinations.size()) );
+		THROW_IFX( destinations.size()!=1, IOException(SRCE_CUR, destination, ELogLevel::Error, "destination found {} times.", destinations.size()) );
 		Google::FileRequestBody request;  request.MimeType = mimeType; request.Name = request.OriginalFilename=source.filename().string();request.Parents.push_back( destinations[0]->Id );
 
 		var pBinary = IO::FileUtilities::LoadBinary(source);
@@ -289,7 +289,7 @@ namespace Jde::IO::Drive
 		const string mimeType{ pType!=_mimeTypes.end() ? pType->second : string("application/octet-stream") };
 
 		var destinations = FindPath( destination.parent_path(), true );
-		THROW_IFX( destinations.size()!=1, IOException(SRCE_CUR, destination, "destination found {} times.", destinations.size()) );
+		THROW_IFX( destinations.size()!=1, IOException(SRCE_CUR, destination, ELogLevel::Error, "destination found {} times.", destinations.size()) );
 
 		Google::FileRequestBody request;  request.MimeType = mimeType; request.CreatedTime = dirEntry.CreatedTime; request.ModifiedTime = dirEntry.ModifiedTime; request.Name = request.OriginalFilename=destination.filename().string();request.Parents.push_back( destinations[0]->Id );
 
@@ -324,7 +324,7 @@ namespace Jde::IO::Drive
 		if( !pEntry )
 		{
 			var files = FindPath( dirEntry.Path );
-			THROW_IFX( files.size()!=1, IOException(SRCE_CUR, dirEntry.Path, "found '{}' entries for '{}'.", files.size()) );
+			THROW_IFX( files.size()!=1, IOException(SRCE_CUR, dirEntry.Path, ELogLevel::Error, "found '{}' entries for '{}'.", files.size()) );
 			pFound = make_shared<GoogleDirEntry>( *files[0] );
 			pEntry = pFound.get();
 		}
@@ -342,7 +342,7 @@ namespace Jde::IO::Drive
 	{
 		//PATCH https://www.googleapis.com/drive/v3/files/fileId
 		//https://www.googleapis.com/drive/v2/files/fileId/trash
-		auto files = FindPath( path ); THROW_IFX( files.size()!=1, IOException(SRCE_CUR, path, "Could not find. files.size()='{}'", files.size()) );
+		auto files = FindPath( path ); THROW_IFX( files.size()!=1, IOException(SRCE_CUR, path, ELogLevel::Error, "Could not find. files.size()='{}'", files.size()) );
 		auto pFile = files.front();
 		var target{ format("/drive/v3/files/{}", pFile->Id) };
 		constexpr sv body = "{\"trashed\":true}"sv;
