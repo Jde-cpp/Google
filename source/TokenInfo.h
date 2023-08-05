@@ -41,9 +41,9 @@ namespace Jde::Google
 		if( j.find("locale")!=j.end() )
 			j.at("locale").get_to( token.Locale );
 		if( j.find("iat")!=j.end() )
-			token.Iat = stoi( string{j["iat"]} );
+			token.Iat = j["iat"];
 		if( j.find("exp")!=j.end() )
-			token.Expiration = stoi( string{j["exp"]} );
+			token.Expiration = j["exp"];
 	}
 
 	#undef var
