@@ -9,14 +9,14 @@ namespace Jde::Google
 		string Azp;
 		string Aud;
 		string Email;
-		bool EmailVerified{false};
+		bool EmailVerified{};
 		string Name;
 		string PictureUrl;
 		string GivenName;
 		string FamilyName;
 		string Locale;
-		time_t Iat{0};
-		time_t Expiration{0};
+		time_t Iat{};
+		time_t Expiration{};
 	};
 	inline void from_json( const nlohmann::json& j, TokenInfo& token )noexcept(false)
 	{
